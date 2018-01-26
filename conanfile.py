@@ -37,6 +37,15 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 MESSAGE(STATUS "Using External Root: $ENV{H3D_EXTERNAL_ROOT}")
 ''')
+
+        tools.replace_in_file("source/H3DLoad/build/CMakeLists.txt", 
+            """set( CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/../../build/modules" )""", 
+            """set( CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/../../build/localModules" "${H3DLoad_SOURCE_DIR}/../../build/modules" )""")
+
+        tools.replace_in_file("source/H3DViewer/build/CMakeLists.txt", 
+            """set( CMAKE_MODULE_PATH "${H3DViewer_SOURCE_DIR}/modules" "${H3DViewer_SOURCE_DIR}/../../build/modules" )""", 
+            """set( CMAKE_MODULE_PATH "${H3DViewer_SOURCE_DIR}/../../build/localModules" "${H3DViewer_SOURCE_DIR}/modules" "${H3DViewer_SOURCE_DIR}/../../build/modules" )""")
+
        
     def build(self):
         cmake = CMake(self)
@@ -46,8 +55,9 @@ MESSAGE(STATUS "Using External Root: $ENV{H3D_EXTERNAL_ROOT}")
         cmake.install()
 
     def package(self):
-        self.copy(pattern='*.h' , dst="include", src="source/include", keep_path=True)
-        self.copy(pattern='FindH3DAPI.cmake' , dst="cmake", keep_path=False)
+        self.copy(pattern='*.h', dst="include", src="source/include", keep_path=True)
+        self.copy(pattern='FindH3DAPI.cmake', dst="cmake", keep_path=False)
+        self.copy(pattern='*', src="source/examples", dst="examples", keep_path=False)
 
     def package_info(self):
         if self.settings.arch == "x86":
@@ -56,3 +66,4 @@ MESSAGE(STATUS "Using External Root: $ENV{H3D_EXTERNAL_ROOT}")
             libfolder = "lib64"
 
         self.cpp_info.libs = tools.collect_libs(self, folder=libfolder)
+        self.cpp_info.libdirs = [libfolder]
