@@ -17,6 +17,7 @@ class H3DAPIConan(ConanFile):
     requires = (
         "h3dutil/1.4-beta@camposs/stable",
         "hapi/1.4-beta@camposs/stable",
+        "glew/[>=2.1.0]/camposs/stable",
         )
 
     # exports = "*"
